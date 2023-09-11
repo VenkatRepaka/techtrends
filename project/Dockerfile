@@ -2,7 +2,7 @@ FROM python:3.8-alpine
 
 WORKDIR /app
 
-ADD ./techtrends /app
+ADD ./project/techtrends /app
 
 EXPOSE 3111
 
