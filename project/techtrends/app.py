@@ -3,6 +3,8 @@ import sqlite3
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 from werkzeug.exceptions import abort
 
+connections_count = 0
+
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
 def get_db_connection():
@@ -13,6 +15,7 @@ def get_db_connection():
 # Function to get a post using its ID
 def get_post(post_id):
     connection = get_db_connection()
+    connections_count += 1
     post = connection.execute('SELECT * FROM posts WHERE id = ?',
                         (post_id,)).fetchone()
     connection.close()
@@ -26,6 +29,7 @@ app.config['SECRET_KEY'] = 'your secret key'
 @app.route('/')
 def index():
     connection = get_db_connection()
+    connections_count += 1
     posts = connection.execute('SELECT * FROM posts').fetchall()
     connection.close()
     return render_template('index.html', posts=posts)
@@ -45,6 +49,21 @@ def post(post_id):
 def about():
     return render_template('about.html')
 
+@app.route('/healthz')
+def health():
+    health_data = {
+        "result": "OK - healthy"
+    }
+    return jsonify(health_data)
+
+@app.route('/metrics')
+def metrics():
+    connection = get_db_connection()
+    posts = connection.execute('SELECT * FROM posts').fetchall()
+    connection.close()
+    post_count = size(posts)
+    return jsonify({"post_count": post_count, "db_connection_count": connections_count})
+
 # Define the post creation functionality 
 @app.route('/create', methods=('GET', 'POST'))
 def create():
@@ -56,6 +75,7 @@ def create():
             flash('Title is required!')
         else:
             connection = get_db_connection()
+            connections_count += 1
             connection.execute('INSERT INTO posts (title, content) VALUES (?, ?)',
                          (title, content))
             connection.commit()
