@@ -6,7 +6,7 @@ service:
   protocol: TCP
   type: ClusterIP
 image:
-  repository: techat/techtrends
+  repository: techatom/techtrends
   tag: latest
   imagePullPolicy: IfNotPresent
 replicaCount: 1
