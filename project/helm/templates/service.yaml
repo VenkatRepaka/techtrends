@@ -9,11 +9,11 @@ metadata:
 spec:
   ports:
   - name: 4111-3111
-    port: {{ .Values.image.port }}
-    protocol: {{ .Values.image.protocol }}
-    targetPort: {{ .Values.image.targetPort }}
+    port: {{ .Values.service.port }}
+    protocol: {{ .Values.service.protocol }}
+    targetPort: {{ .Values.service.targetPort }}
   selector:
     app: techtrends
-  type: {{ .Values.image.type }}
+  type: {{ .Values.service.type }}
 status:
   loadBalancer: {}
